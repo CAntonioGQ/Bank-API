@@ -3,21 +3,21 @@ import Prestamo from '../models/prestamos';
 import db from '../db/connection';
 
 export const getPrestamos = async (req: Request, res: Response) => {
-  try {
-    const prestamos = await db.query(`
-      SELECT DISTINCT c.nombreCliente, m.montos, p.plazos
-      FROM prestamos pr
-      JOIN clientes c ON pr.id_clientes = c.idClientes
-      JOIN montos m ON pr.id_montos = m.idMontos
-      JOIN plazos p ON pr.id_plazos = p.idPlazos
-    `);
-    const prestamosData = prestamos[0];
-    res.json({ prestamos: prestamosData });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: 'Error al obtener los préstamos' });
-  }
-};
+    try {
+      const prestamos = await db.query(`
+        SELECT DISTINCT pr.id_rel, c.nombreCliente, m.montos, p.plazos
+        FROM prestamos pr
+        JOIN clientes c ON pr.id_clientes = c.idClientes
+        JOIN montos m ON pr.id_montos = m.idMontos
+        JOIN plazos p ON pr.id_plazos = p.idPlazos
+      `);
+      const prestamosData = prestamos[0];
+      res.json({ prestamos: prestamosData });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ msg: 'Error al obtener los préstamos' });
+    }
+  };
 
 // Obtener préstamo por ID
 export const getPrestamo = async (req: Request, res: Response) => {

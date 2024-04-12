@@ -18,13 +18,12 @@ const connection_1 = __importDefault(require("../db/connection"));
 const getPrestamos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const prestamos = yield connection_1.default.query(`
-      SELECT DISTINCT c.nombreCliente, m.montos, p.plazos
-      FROM prestamos pr
-      JOIN clientes c ON pr.id_clientes = c.idClientes
-      JOIN montos m ON pr.id_montos = m.idMontos
-      JOIN plazos p ON pr.id_plazos = p.idPlazos
-    `);
-        // Extraer el resultado de la consulta del primer elemento del array
+        SELECT DISTINCT pr.id_rel, c.nombreCliente, m.montos, p.plazos
+        FROM prestamos pr
+        JOIN clientes c ON pr.id_clientes = c.idClientes
+        JOIN montos m ON pr.id_montos = m.idMontos
+        JOIN plazos p ON pr.id_plazos = p.idPlazos
+      `);
         const prestamosData = prestamos[0];
         res.json({ prestamos: prestamosData });
     }
@@ -62,30 +61,13 @@ const getPrestamo = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.getPrestamo = getPrestamo;
 const postPrestamo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { nombreCliente, montos, plazos } = req.body;
+    const { id_clientes, id_montos, id_plazos } = req.body;
     try {
-        // Buscar el ID del cliente por su nombre
-        const cliente = yield connection_1.default.query(`SELECT idClientes FROM clientes WHERE nombreCliente = :nombreCliente`, {
-            replacements: { nombreCliente },
-        });
-        const id_clientes = cliente[0][0].idClientes;
-        // Buscar el ID del monto
-        const monto = yield connection_1.default.query(`SELECT idMontos FROM montos WHERE montos = :montos`, {
-            replacements: { montos },
-        });
-        const id_montos = monto[0][0].idMontos;
-        // Buscar el ID del plazo
-        const plazo = yield connection_1.default.query(`SELECT idPlazos FROM plazos WHERE plazos = :plazos`, {
-            replacements: { plazos },
-        });
-        const id_plazos = plazo[0][0].idPlazos;
-        // Crear el préstamo con los IDs encontrados
         const prestamo = yield prestamos_1.default.create({
             id_clientes,
             id_montos,
-            id_plazos,
+            id_plazos
         });
-        // Enviar la respuesta con el préstamo creado
         res.json(prestamo);
     }
     catch (error) {
