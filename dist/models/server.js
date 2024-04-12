@@ -16,6 +16,7 @@ const express_1 = __importDefault(require("express"));
 const cliente_routes_1 = __importDefault(require("../routes/cliente.routes"));
 const montos_routes_1 = __importDefault(require("../routes/montos.routes"));
 const plazos_routes_1 = __importDefault(require("../routes/plazos.routes"));
+const prestamos_routes_1 = __importDefault(require("../routes/prestamos.routes"));
 const cors_1 = __importDefault(require("cors"));
 const connection_1 = __importDefault(require("../db/connection"));
 class Server {
@@ -24,6 +25,7 @@ class Server {
             cliente: '/api/clientes',
             montos: '/api/montos',
             plazos: '/api/plazos',
+            prestamos: '/api/prestamos'
         };
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || '8000';
@@ -51,6 +53,7 @@ class Server {
         this.app.use(this.apiPaths.cliente, cliente_routes_1.default);
         this.app.use(this.apiPaths.montos, montos_routes_1.default);
         this.app.use(this.apiPaths.plazos, plazos_routes_1.default);
+        this.app.use(this.apiPaths.prestamos, prestamos_routes_1.default);
     }
     listen() {
         this.app.listen(this.port, () => {
