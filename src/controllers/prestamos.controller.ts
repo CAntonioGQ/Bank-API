@@ -5,12 +5,18 @@ import db from '../db/connection';
 export const getPrestamos = async (req: Request, res: Response) => {
     try {
       const prestamos = await db.query(`
-        SELECT DISTINCT pr.id_rel, c.nombreCliente, m.montos, p.plazos
+        SELECT DISTINCT 
+          pr.id_rel, 
+          c.nombreCliente, 
+          m.montos, 
+          p.plazos,
+          pr.createdAt
         FROM prestamos pr
         JOIN clientes c ON pr.id_clientes = c.idClientes
         JOIN montos m ON pr.id_montos = m.idMontos
         JOIN plazos p ON pr.id_plazos = p.idPlazos
       `);
+  
       const prestamosData = prestamos[0];
       res.json({ prestamos: prestamosData });
     } catch (error) {
@@ -31,6 +37,7 @@ export const getPrestamo = async (req: Request, res: Response) => {
       JOIN plazos p ON pr.id_plazos = p.idPlazos
       WHERE pr.id_rel = :id_rel
     `, { replacements: { id_rel } });
+    
     // Extraer el resultado de la consulta del primer elemento del array
     const prestamoData = prestamo[0];
     if (prestamoData.length > 0) {
@@ -46,7 +53,6 @@ export const getPrestamo = async (req: Request, res: Response) => {
 
 export const postPrestamo = async (req: Request, res: Response) => {
     const { nombreCliente, montos, plazos } = req.body;
-  
     try {
       // Buscar el ID del cliente por su nombre
       const cliente = await db.query(`SELECT idClientes FROM clientes WHERE nombreCliente = :nombreCliente`, {
@@ -66,11 +72,12 @@ export const postPrestamo = async (req: Request, res: Response) => {
       });
       const id_plazos = (plazo[0][0] as { idPlazos: number }).idPlazos;
   
-      // Crear el préstamo con los IDs encontrados
+      // Crear el préstamo con los IDs encontrados y el timestamp actual
       const prestamo = await Prestamo.create({
         id_clientes,
         id_montos,
         id_plazos,
+        createdAt: db.literal('NOW()'),
       });
   
       // Enviar la respuesta con el préstamo creado
@@ -80,7 +87,6 @@ export const postPrestamo = async (req: Request, res: Response) => {
       res.status(500).json({ msg: 'No se pudo crear un nuevo préstamo' });
     }
   };
-
 
 // Eliminar un préstamo
 export const deletePrestamo = async (req: Request, res: Response) => {

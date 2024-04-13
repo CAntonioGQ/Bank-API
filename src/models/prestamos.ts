@@ -19,6 +19,10 @@ const Prestamo = db.define('Prestamo', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  createdAt:{
+    type: DataTypes.DATE,
+    allowNull: false,
+  }
 }, {
   tableName: 'prestamos',
   timestamps: false, // Si no tienes columnas de timestamps

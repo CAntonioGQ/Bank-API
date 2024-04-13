@@ -23,6 +23,10 @@ const Prestamo = connection_1.default.define('Prestamo', {
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
     },
+    createdAt: {
+        type: sequelize_1.DataTypes.DATE,
+        allowNull: false,
+    }
 }, {
     tableName: 'prestamos',
     timestamps: false, // Si no tienes columnas de timestamps
